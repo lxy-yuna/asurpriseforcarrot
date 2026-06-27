@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>生日快乐 · 闺蜜</title>
+  <style>
+    /* 全局极简黑白灰 + 手写/衬线字体 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Times New Roman', 'Songti SC', '华文楷体', 'KaiTi', serif;
+      color: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    /* 主卡片 — 极简白底黑框 */
+    .birthday-card {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid #000;
+      padding: 32px 24px 28px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    /* ----- HEADER 顶部 ----- */
+    .header {
+      text-align: center;
+      letter-spacing: 2px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 300;
+      font-family: 'Times New Roman', 'Georgia', serif;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      margin-bottom: 6px;
+      color: #000;
+    }
+    .header .date {
+      font-size: 18px;
+      font-weight: 300;
+      color: #333;
+      letter-spacing: 4px;
+      font-family: 'Times New Roman', serif;
+    }
+
+    /* ----- 主视觉区 (画作容器) ----- */
+    .main-visual {
+      background: #fff;
+      border: 1px solid #000;
+      padding: 20px 20px 12px;
+      margin-bottom: 6px;
+      transition: all 0.1s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .main-visual .artwork {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .main-visual .artwork svg,
+    .main-visual .artwork img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border: none;
+      background: #fff;
+    }
+    .artwork img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .click-hint {
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #888;
+      margin-top: 14px;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 12px;
+    }
+
+    /* ----- 底部 (footer) 两行文字 + 蜡烛 ----- */
+    .footer {
+      margin-top: 32px;
+      text-align: center;
+      border-top: 1px solid #eee;
+      padding-top: 22px;
+      position: relative;
+    }
+    .footer .hzy-line {
+      font-family: 'Times New Roman', 'Georgia', serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: #111;
+      line-height: 1.6;
+    }
+    .footer .hzy-line span {
+      display: inline-block;
+      margin: 0 4px;
+    }
+    .footer .hzy-line .year {
+      font-size: 14px;
+      color: #555;
+      letter-spacing: 1px;
+    }
+
+    /* 蜡烛区域 — 简笔画风格 */
+    .candle-area {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .candle-area svg {
+      display: block;
+      width: 60px;
+      height: 80px;
+      transition: filter 0.2s;
+    }
+    .candle-area:hover svg {
+      filter: drop-shadow(0 0 6px rgba(0,0,0,0.05));
+    }
+    /* 火焰晃动 (hover) */
+    .candle-area:hover .flame {
+      transform-origin: 50% 80%;
+      animation: flicker 0.25s infinite alternate ease-in-out;
+    }
+    @keyframes flicker {
+      0% { transform: rotate(-3deg) scale(1.02); }
+      100% { transform: rotate(4deg) scale(0.96); }
+    }
+
+    /* 浮现的夸夸 */
+    .secret-toast {
+      position: fixed;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #000;
+      padding: 18px 34px;
+      font-size: 22px;
+      font-family: 'Times New Roman', 'Songti SC', serif;
+      letter-spacing: 2px;
+      color: #000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      background: #ffffff;
+    }
+    .secret-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-6px);
+      pointer-events: none;
+    }
+
+    /* 气泡对话框 (彩蛋) */
+    .bubble-dialog {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.92);
+      background: #fff;
+      border: 1px solid #000;
+      padding: 20px 36px;
+      font-size: 20px;
+      font-family: 'Times New Roman', 'Georgia', serif;
+      letter-spacing: 2px;
+      color: #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      pointer-events: none;
+      background: #ffffff;
+      border-radius: 4px;
+     
