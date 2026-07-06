@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday HZY</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #f5f5f5;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            position: relative;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-top: 20px;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 100;
+            letter-spacing: 8px;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .header-date {
+            font-size: 1.8rem;
+            font-weight: 100;
+            letter-spacing: 3px;
+            color: #000;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #000;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .artwork-container {
+            width: 100%;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .artwork-container img {
+            max-width: 100%;
+            max-height: 400px;
+            transition: transform 0.1s;
+            position: relative;
+            z-index: 1;
+        }
+
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .bubble {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border: 1px solid #000;
+            padding: 15px 25px;
+            border-radius: 20px;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #000;
+        }
+
+        .bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #fff;
+            z-index: 1;
+        }
+
+        .bubble.show {
+            opacity: 1;
+        }
+
+        .artwork-container.shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+
+        .hint-text {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .footer-name {
+            font-size: 2rem;
+            font-weight: 100;
+            letter-spacing: 5px;
+            margin-bottom: 5px;
+        }
+
+        .footer-years {
+            font-size: 1rem;
+            color: #666;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+        }
+
+        /* 夸夸墙样式 - 绝对定位覆盖 */
+        .praise-wall {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .praise-slot {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+        }
+
+        /* 左边位置 */
+        .left-1 {
+            left: 0;
+            top: 60px;
+            text-align: right;
+            justify-content: flex-end;
+        }
+
+        .left-2 {
+            left: -30px;
+            top: 100px;
+            text-align: right;
+            justify-content: flex-end;
+        }
+
+        .left-3 {
+            left: 0;
+            top: 140px;
+            text-align: right;
+            justify-content: flex-end;
+        }
+
+        /* 右边位置 */
+        .right-1 {
+            right: 0;
+            top: 60px;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .right-2 {
+            right: -30px;
+            top: 100px;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .right-3 {
+            right: 0;
+            top: 140px;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        /* 夸夸文案样式 */
+        .praise-item {
+            font-size: 0.9rem;
+            color: #333;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(51, 51, 51, 0.3), 0 0 20px rgba(51, 51, 51, 0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s, transform 0.5s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .praise-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .candle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .candle {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .candle-body {
+            width: 30px;
+            height: 80px;
+            border: 2px solid #000;
+            background-color: #fff;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .candle-wick {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 10px;
+            background-color: #000;
+        }
+
+        .flame {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: radial-gradient(ellipse at bottom, #000 0%, transparent 70%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.3s infinite alternate;
+            transition: all 0.1s;
+        }
+
+        .candle-container:hover .flame {
+            animation: flicker-faster 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-1deg); }
+            100% { transform: translateX(-50%) scale(1.05) rotate(1deg); }
+        }
+
+        @keyframes flicker-faster {
+            0% { transform: translateX(-50%) scale(1) rotate(-3deg); }
+            50% { transform: translateX(-50%) scale(1.1) rotate(0deg); }
+            100% { transform: translateX(-50%) scale(0.95) rotate(3deg); }
+        }
+
+
+
+        .time-stamp {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 30px 50px;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            opacity: 0;
+            z-index: 100;
+            animation: fadeInOut 4s ease-in-out forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            header {
+                margin-bottom: 40px;
+                padding-top: 10px;
+            }
+
+            .header-title {
+                font-size: 1.8rem;
+                letter-spacing: 4px;
+            }
+
+            .header-date {
+                font-size: 1.4rem;
+                letter-spacing: 2px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .artwork-container {
+                min-height: 200px;
+            }
+
+            .artwork-container img {
+                max-height: 300px;
+            }
+
+            .hint-text {
+                font-size: 0.85rem;
+            }
+
+            .footer-name {
+                font-size: 1.5rem;
+                letter-spacing: 3px;
+            }
+
+            .footer-years {
+                font-size: 0.9rem;
+                letter-spacing: 1px;
+                margin-bottom: 40px;
+            }
+
+            /* 移动端夸夸墙适配 */
+            .praise-wall {
+                max-width: 320px;
+            }
+
+            .left-1 {
+                top: 60px;
+            }
+
+            .left-2 {
+                left: -15px;
+                top: 90px;
+            }
+
+            .left-3 {
+                top: 120px;
+            }
+
+            .right-1 {
+                top: 60px;
+            }
+
+            .right-2 {
+                right: -15px;
+                top: 90px;
+            }
+
+            .right-3 {
+                top: 120px;
+            }
+
+            .praise-item {
+                font-size: 0.8rem;
+            }
+
+            .time-stamp {
+                padding: 20px 30px;
+                font-size: 1.5rem;
+                letter-spacing: 3px;
+            }
+
+            .bubble {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .header-title {
+                font-size: 1.5rem;
+                letter-spacing: 3px;
+            }
+
+            .header-date {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                padding: 20px 15px;
+            }
+
+            .artwork-container {
+                min-height: 180px;
+            }
+
+            .artwork-container img {
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="time-stamp">我们相识的第12年</div>
+
+    <div class="container">
+        <header>
+            <div class="header-title">HAPPY BIRTHDAY</div>
+            <div class="header-date">7.31</div>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="artwork-container" id="artwork">
+                    <img src="shengrikuaile20260731.jpg" alt="生日快乐">
+                    <canvas id="confetti-canvas"></canvas>
+                    <div class="bubble" id="bubble">请查看QQ消息！</div>
+                </div>
+                <div class="hint-text">点击画布有惊喜</div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-name">HZY</div>
+            <div class="footer-years">2009-2026</div>
+            
+            <div class="candle-container" id="candle">
+                <div class="candle">
+                    <div class="flame"></div>
+                    <div class="candle-wick"></div>
+                    <div class="candle-body"></div>
+                </div>
+            </div>
+            
+            <!-- 错落6宫格夸夸墙 - 绝对定位覆盖 -->
+            <div class="praise-wall">
+                <div class="praise-slot left-1" id="slot-left-1"></div>
+                <div class="praise-slot right-1" id="slot-right-1"></div>
+                <div class="praise-slot left-2" id="slot-left-2"></div>
+                <div class="praise-slot right-2" id="slot-right-2"></div>
+                <div class="praise-slot left-3" id="slot-left-3"></div>
+                <div class="praise-slot right-3" id="slot-right-3"></div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const secrets = [
+            "冀生命长青",
+            "17岁啦",
+            "么么叽么么叽么么叽",
+            "祝你快乐，不止生日",
+            "吹蜡烛，许的愿必须实现！",
+            "新的一岁，继续发光",
+            "考试不挂科",
+            "祝平安",
+            "˶>ᗜ<˶美好正向你奔来ಣ",
+            "我看见一片肥沃的萝卜地",
+            "咯咯哒咯咯哒"
+        ];
+        
+        // 6个夸夸位置的ID
+        const slotIds = [
+            "slot-left-1",
+            "slot-right-1",
+            "slot-left-2",
+            "slot-right-2",
+            "slot-left-3",
+            "slot-right-3"
+        ];
+        
+        // 记录每个位置是否被占用
+        let slotOccupied = {
+            "slot-left-1": false,
+            "slot-right-1": false,
+            "slot-left-2": false,
+            "slot-right-2": false,
+            "slot-left-3": false,
+            "slot-right-3": false
+        };
+
+        // 背景飘落粒子
+        const bgCanvas = document.getElementById('particles-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgParticles = [];
+
+        function resizeBgCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+
+        class BgParticle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = -20;
+                this.speed = 0.5 + Math.random() * 1;
+                this.opacity = 0.3 + Math.random() * 0.3;
+                this.size = 2 + Math.random() * 3;
+                this.type = Math.random() < 0.3 ? 'star' : (Math.random() < 0.5 ? 'hollowStar' : 'dot');
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > bgCanvas.height + 20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                bgCtx.save();
+                bgCtx.globalAlpha = this.opacity;
+                bgCtx.fillStyle = '#999';
+                bgCtx.strokeStyle = '#999';
+
+                if (this.type === 'dot') {
+                    bgCtx.beginPath();
+                    bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    bgCtx.fill();
+                } else if (this.type === 'star') {
+                    bgCtx.font = `${this.size * 3}px serif`;
+                    bgCtx.fillText('☆', this.x, this.y);
+                } else {
+                    bgCtx.font = `${this.size * 3}px serif`;
+                    bgCtx.fillText('⊹', this.x, this.y);
+                }
+
+                bgCtx.restore();
+            }
+        }
+
+        function initBgParticles() {
+            bgParticles = [];
+            for (let i = 0; i < 50; i++) {
+                const p = new BgParticle();
+                p.y = Math.random() * bgCanvas.height;
+                bgParticles.push(p);
+            }
+        }
+
+        function animateBg() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgParticles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateBg);
+        }
+
+        // 彩带动画
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const confettiCtx = confettiCanvas.getContext('2d');
+        let confettiParticles = [];
+        let confettiAnimationId = null;
+        let isPlayingConfetti = false;
+        let clickCount = 0;
+        
+        // 记录钉钉通知是否已发送，防止重复（刷新页面后重置）
+        let dingNotified = {
+            4: false,
+            5: false
+        };
+
+        resizeBgCanvas();
+        initBgParticles();
+        animateBg();
+
+        window.addEventListener('resize', () => {
+            resizeBgCanvas();
+        });
+        
+        // 钉钉Webhook地址
+        const DING_WEBHOOK = "https://oapi.dingtalk.com/robot/send?access_token=44cf4a38bc2e9e8624c387a76c79ea856c8e032a5770b1202e5b4f04d1963025";
+        
+        // 发送钉钉通知函数
+        async function sendDingNotification(clickNum) {
+            // 检查是否已发送过
+            if (dingNotified[clickNum]) {
+                return;
+            }
+            
+            let message;
+            
+            if (clickNum === 4) {
+                message = {
+                    msgtype: "text",
+                    text: {
+                        content: "⚠ 她点第4下了！准备好要发送的QQ消息！她很快就会点第5下 🎯 [carrot]"
+                    }
+                };
+            } else if (clickNum === 5) {
+                message = {
+                    msgtype: "text",
+                    text: {
+                        content: "🎉 她点第5下了！快去QQ给她发送惊喜消息吧！她正在等你哦 💕 [carrot]"
+                    }
+                };
+            }
+            
+            if (!message) return;
+            
+            console.log("📧 准备发送的消息:", message);
+            
+            // 使用CORS代理
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(DING_WEBHOOK)}`;
+            
+            try {
+                const response = await fetch(proxyUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(message)
+                });
+                
+                const data = await response.json();
+                console.log("钉钉通知结果:", data);
+                
+                dingNotified[clickNum] = true;
+                
+                if (clickNum === 4) {
+                    console.log("🔔 钉钉通知 [第4次]：已发送");
+                } else if (clickNum === 5) {
+                    console.log("🎉 钉钉通知 [第5次]：已发送");
+                }
+            } catch (error) {
+                console.log("❌ 钉钉通知失败：" + error);
+                
+                // 如果主代理失败，尝试备用代理
+                try {
+                    console.log("🔄 尝试使用备用代理...");
+                    const backupProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(DING_WEBHOOK)}`;
+                    const backupResponse = await fetch(backupProxyUrl, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(message)
+                    });
+                    
+                    const backupData = await backupResponse.json();
+                    console.log("备用代理钉钉通知结果:", backupData);
+                    
+                    dingNotified[clickNum] = true;
+                    
+                    if (clickNum === 4) {
+                        console.log("🔔 钉钉通知 [第4次]：已发送（备用代理）");
+                    } else if (clickNum === 5) {
+                        console.log("🎉 钉钉通知 [第5次]：已发送（备用代理）");
+                    }
+                } catch (backupError) {
+                    console.log("❌ 备用代理也失败：" + backupError);
+                }
+            }
+        }
+        
+        const dialogSequence = [
+            "祝你生日快乐！！🥳",
+            "祝你……生日……快乐……！",
+            "……为什么还点我？！！",
+            "不要再点了……人家也会害羞的🥺",
+            "好吧好吧……给你在QQ里发了一条消息，去看看呗 💬"
+        ];
+
+        const confettiColors = ['#000', '#333', '#666', '#999', '#ccc'];
+
+        class ConfettiParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 3 + Math.random() * 6;
+                this.height = 8 + Math.random() * 15;
+                this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                this.opacity = 0.7 + Math.random() * 0.3;
+                
+                const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI;
+                const speed = 3 + Math.random() * 5;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed - 2;
+                
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.3;
+                this.gravity = 0.15;
+                this.fadeSpeed = 0.01;
+            }
+
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.rotation += this.rotationSpeed;
+                this.opacity -= this.fadeSpeed;
+                this.vx *= 0.99;
+            }
+
+            draw() {
+                confettiCtx.save();
+                confettiCtx.globalAlpha = this.opacity;
+                confettiCtx.fillStyle = this.color;
+                confettiCtx.translate(this.x, this.y);
+                confettiCtx.rotate(this.rotation);
+                confettiCtx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+                confettiCtx.restore();
+            }
+
+            isDead() {
+                return this.opacity <= 0;
+            }
+        }
+
+        function resizeConfettiCanvas() {
+            const rect = confettiCanvas.parentElement.getBoundingClientRect();
+            confettiCanvas.width = rect.width;
+            confettiCanvas.height = rect.height;
+        }
+
+        function launchConfetti() {
+            resizeConfettiCanvas();
+            confettiParticles = [];
+            
+            const startX = confettiCanvas.width / 2;
+            const startY = confettiCanvas.height - 20;
+            
+            const particleCount = 60 + Math.floor(Math.random() * 40);
+            
+            for (let i = 0; i < particleCount; i++) {
+                confettiParticles.push(new ConfettiParticle(startX, startY));
+            }
+            
+            if (confettiAnimationId) {
+                cancelAnimationFrame(confettiAnimationId);
+            }
+            
+            isPlayingConfetti = true;
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            confettiParticles = confettiParticles.filter(p => !p.isDead());
+            
+            confettiParticles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            if (confettiParticles.length > 0) {
+                confettiAnimationId = requestAnimationFrame(animateConfetti);
+            } else {
+                confettiAnimationId = null;
+                isPlayingConfetti = false;
+            }
+        }
+
+        // 点击画作事件
+        const artwork = document.getElementById('artwork');
+        const bubble = document.getElementById('bubble');
+
+        artwork.addEventListener('click', () => {
+            console.log("🎯 点击画作！当前状态：", {
+                isPlayingConfetti,
+                clickCount,
+                dingNotified
+            });
+            
+            if (isPlayingConfetti) {
+                console.log("⚠️ 彩蛋正在播放，忽略点击");
+                return;
+            }
+            
+            artwork.classList.add('shake');
+            launchConfetti();
+            
+            // 根据点击次数显示不同文案
+            let bubbleText;
+            const currentClick = clickCount + 1; // 当前是第几次点击（从1开始）
+            
+            console.log("📌 当前是第", currentClick, "次点击");
+            
+            if (clickCount < dialogSequence.length) {
+                bubbleText = dialogSequence[clickCount];
+                clickCount++;
+            } else {
+                bubbleText = "生日快乐呀";
+            }
+            
+            // 触发钉钉通知（第4次和第5次点击）
+            if (currentClick === 4 || currentClick === 5) {
+                console.log("📤 准备发送钉钉通知，第", currentClick, "次");
+                sendDingNotification(currentClick);
+            }
+            
+            bubble.textContent = bubbleText;
+            bubble.classList.add('show');
+
+            setTimeout(() => {
+                artwork.classList.remove('shake');
+            }, 500);
+            
+            setTimeout(() => {
+                bubble.classList.remove('show');
+            }, 3000);
+        });
+
+        // 蜡烛点击事件 - 6宫格夸夸墙
+        const candle = document.getElementById('candle');
+
+        // 获取随机空位
+        function getRandomEmptySlot() {
+            const emptySlots = slotIds.filter(id => !slotOccupied[id]);
+            if (emptySlots.length === 0) return null;
+            return emptySlots[Math.floor(Math.random() * emptySlots.length)];
+        }
+
+        // 在指定位置显示夸夸文案
+        function showPraise(slotId, text) {
+            const slot = document.getElementById(slotId);
+            
+            // 创建夸夸元素
+            const praiseEl = document.createElement('div');
+            praiseEl.className = 'praise-item';
+            praiseEl.textContent = text;
+            
+            // 清空并添加新元素
+            slot.innerHTML = '';
+            slot.appendChild(praiseEl);
+            
+            // 标记为占用
+            slotOccupied[slotId] = true;
+            
+            // 触发动画
+            setTimeout(() => {
+                praiseEl.classList.add('show');
+            }, 10);
+            
+            // 3秒后淡出并释放位置
+            setTimeout(() => {
+                praiseEl.classList.remove('show');
+                setTimeout(() => {
+                    slot.innerHTML = '';
+                    slotOccupied[slotId] = false;
+                }, 500);
+            }, 3000);
+        }
+
+        candle.addEventListener('click', () => {
+            // 获取随机空位
+            const slotId = getRandomEmptySlot();
+            
+            // 如果没有空位，不做任何反应
+            if (!slotId) return;
+            
+            // 随机选择文案
+            const randomSecret = secrets[Math.floor(Math.random() * secrets.length)];
+            
+            // 显示夸夸
+            showPraise(slotId, randomSecret);
+        });
+    </script>
+</body>
+</html>
